@@ -2,6 +2,9 @@ import express, { Request, Response } from 'express'
 import bodyParser from 'body-parser'
 // @ts-ignore
 import client from "./database";
+import productRoutes from "./handlers/product";
+import orderRoutes from "./handlers/order";
+import userRoutes from "./handlers/user";
 
 const app: express.Application = express()
 const address: string = "0.0.0.0:3000"
@@ -20,6 +23,9 @@ app.get('/', async function (req: Request, res: Response) {
     }
 })
 
+userRoutes(app)
+productRoutes(app)
+orderRoutes(app)
 app.listen(3000, function () {
     console.log(`starting app on: ${address}`)
 })
