@@ -1,54 +1,89 @@
-# Storefront Backend Project
+# Udacity: Storefront Backend API
 
-## Getting Started
+This is a backend API build in Nodejs for an online store. It exposes a RESTful API that will be used by the frontend developer to present data to the frontend.
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+The database schema and and API route information can be found in the [REQUIREMENT.md](REQUIREMENTS.md)
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+## Setup Instructions
+Clone or fork this repository 
 
-## Steps to Completion
+## Install packages
+run `yarn install` or `npm install` with the clone/forked project directory to install all packages required for the project. 
 
-### 1. Plan to Meet Requirements
+## Enviromental Variables Set up
+Bellow are the environmental variables that needs to be set in a `.env` file. This is the default setting that I used for development, but you can change it to what works for you.
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+**NB:** The given values are used in developement and testing but not in production.
+```
+ENV=test
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DATABASE=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+BCRYPT_PASSWORD=
+SALT_ROUNDS=
+JWT_TOKEN_PAS=''
+TOKEN_SECRET = ''
+```
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+## Set up Database
+### Create Databases
+We shall create the dev and test database.
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+- connect to the default postgres database as the server's root user `psql -U postgres`
+- In psql run the following to create a user
+    - `CREATE USER ${POSTGRES_USER} WITH PASSWORD ${POSTGRES_PASSWORD};`
+- In psql run the following to create the dev and test database
+    - `CREATE DATABASE ${POSTGRES_DATABASE};`
+    - `CREATE DATABASE ${POSTGRES_DATABASE}_test;`
+- Connect to the databases and grant all privileges
+    - Grant for dev database
+        - `\c ${POSTGRES_DATABASE}`
+        - `GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DATABASE} TO ${POSTGRES_USER};`
+    - Grant for test database
+        - `\c ${POSTGRES_DATABASE}_test`
+        - `GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DATABASE}_test TO ${POSTGRES_USER};`
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+### Migrate Database
+Navigate to the root directory and run the command below to migrate the database
+by running `db-migrate up`
 
-### 2.  DB Creation and Migrations
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+## Start App
+`yarn watch` or `npm run watch`
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+### Running Ports
+After start up, the server will start on port `3000` and the database on port `5432`
 
-### 3. Models
+## Endpoint Access
+All endpoints are described in the [REQUIREMENT.md](REQUIREMENTS.md) file.
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+## Token and Authentication
+Tokens are passed along with the http header as
+```
+Authorization   Bearer <token>
+```
 
-### 4. Express Handlers
+## Testing
+Run test with
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
+`yarn test`
 
-### 5. JWTs
+It sets the environment to `test`, migrates up tables for the test database, run the test then migrate down all the tables for the test database.
 
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
 
-### 6. QA and `README.md`
 
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
+## Important Notes
 
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+### Environment Variables
+Environment variables are set in the `.env` file and added in `.gitignore` so that it won't be added to github. However, I had provided the names of the variables that need to be set above. I also provided the values that were used in development and testing.
+
+
+### Changing Enviroment to testing
+I had set up two databases, one for development and the other for testing. During testing, I had to make sure the testing database is used instead of the developement database.
+
+To achieve this, I set up a variable in the `.env` file which is by default set to `dev`. During testing, the command `yarn test` will set this variable to `testing` in the package.json. Here is the complete command.
+`"test": "ENV=test && npx tsc && db-migrate --env test up && jasmine && db-migrate db:drop test"` in `package.json`
+
+The first command migrates all tables then the second command changes the environment variable `ENV` to testing, then the jasmine is run and then after testing, the database is reset.

@@ -7,25 +7,27 @@ These are the notes from a meeting with the frontend developer that describe wha
 #### Products
 - Index 
 - Show
-- Create [token required]
-- [OPTIONAL] Top 5 most popular products 
+- Create [token secret required]
 - [OPTIONAL] Products by category (args: product category)
 
 #### Users
 - Index [token required]
 - Show [token required]
-- Create N[token required]
+- Create [token required]
 
 #### Orders
+- Index [token secret required]
+- Show [token secret required]
+- Create [token secret required]
 - Current Order by user (args: user id)[token required]
-- [OPTIONAL] Completed Orders by user (args: user id)[token required]
+- Completed Orders by user (args: user id)[token required]
 
 ## Data Shapes
 #### Product
 -  id
 - name
 - price
-- [OPTIONAL] category
+- category
 
 #### User
 - id
@@ -35,8 +37,12 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 #### Orders
 - id
-- id of each product in the order
-- quantity of each product in the order
 - user_id
 - status of order (active or complete)
+
+#### Order_product
+- id
+- quantity_id
+- order_id (id of the user crating the order)
+- product_id (id of the product in an order)
 
