@@ -92,7 +92,6 @@ const ordersByUserHandler = async (req: Request, res: Response) => {
         res.status(400)
         res.json({error})
     }
-
 }
 
 const orderByStatusHandler = async (req: Request, res: Response) => {
@@ -118,7 +117,6 @@ const currentOrderByStatusHandler = async (req: Request, res: Response) => {
         res.status(401)
         res.json(err)
     }
-
 }
 
 const orderRoutes = (app: express.Application) => {
