@@ -1,66 +1,49 @@
-import { Product, ProductStore } from '../product';
-
-const store = new ProductStore()
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = require("../../models/user");
+const store = new user_1.UserStore();
 describe("Product Model", () => {
     it('should have an index method', () => {
         expect(store.index).toBeDefined();
     });
-
     it('should have a show method', () => {
-        expect(store.index).toBeDefined();
+        expect(store.show).toBeDefined();
     });
-
     it('should have a create method', () => {
-        expect(store.index).toBeDefined();
+        expect(store.create).toBeDefined();
     });
-
-    it('should have a update method', () => {
-        expect(store.index).toBeDefined();
+    it('should have a view by category method method', () => {
+        expect(store.authenticate).toBeDefined();
     });
-
     it('should have a delete method', () => {
-        expect(store.index).toBeDefined();
+        expect(store.delete).toBeDefined();
     });
-
     it('create method should add a product', async () => {
         const result = await store.create({
-            name: 'Bridge to Terabithia',
-            price: 250,
-            category: 'Childrens'
+            firstname: "Test user", lastname: "last name", password: "testPassword",
         });
         expect(result).toEqual({
             id: 1,
-            name: 'Bridge to Terabithia',
-            price: 250,
-            category: 'Adults',
+            firstname: "Test user", lastname: "last name", password: "testPassword",
         });
     });
-
     it('index method should return a list of products', async () => {
         const result = await store.index();
         expect(result).toEqual([{
-            id: 1,
-            name: 'Bridge to Terabithia',
-            price: 250,
-            category: 'Childrens'
-        }]);
+                id: 1,
+                firstname: "Test user", lastname: "last name", password: "testPassword",
+            }]);
     });
-
     it('show method should return the correct products', async () => {
         const result = await store.show("1");
         expect(result).toEqual({
             id: 1,
-            name: 'Bridge to Terabithia',
-            price: 250,
-            category: 'Childrens'
+            firstname: "Test user", lastname: "last name", password: "testPassword",
         });
     });
-
     it('delete method should remove the product', async () => {
         store.delete("1");
-        const result = await store.index()
-
+        const result = await store.index();
         expect(result).toEqual([]);
     });
 });

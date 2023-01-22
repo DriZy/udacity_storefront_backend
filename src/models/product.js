@@ -19,7 +19,7 @@ class ProductStore {
             return result.rows;
         }
         catch (err) {
-            throw new Error(`Could not get articles. Error: ${err}`);
+            throw new Error(`Could not get products. Error: ${err}`);
         }
     }
     async show(id) {
@@ -32,21 +32,21 @@ class ProductStore {
             return result.rows[0];
         }
         catch (err) {
-            throw new Error(`Could not get article ${id}. Error: ${err}`);
+            throw new Error(`Could not get product ${id}. Error: ${err}`);
         }
     }
     async create(product) {
         try {
-            const sql = 'INSERT INTO products (name, price) VALUES($1, $2) RETURNING *';
+            const sql = 'INSERT INTO products (name, price, category) VALUES($1, $2, $3) RETURNING *';
             // @ts-ignore
             const conn = await database_1.default.connect();
-            const result = await conn.query(sql, [product.name, product.price]);
+            const result = await conn.query(sql, [product.name, product.price, product.category.toLowerCase()]);
             const createdProduct = result.rows[0];
             conn.release();
             return createdProduct;
         }
         catch (err) {
-            throw new Error(`Could not add article ${product.name}. Error: ${err}`);
+            throw new Error(`Could not add product ${product.name}. Error: ${err}`);
         }
     }
     async delete(id) {
@@ -60,7 +60,22 @@ class ProductStore {
             return article;
         }
         catch (err) {
-            throw new Error(`Could not delete article ${id}. Error: ${err}`);
+            throw new Error(`Could not delete product ${id}. Error: ${err}`);
+        }
+    }
+    async productsByCategory(cat) {
+        try {
+            const sql = 'SELECT * FROM products WHERE category=($1)';
+            console.log(sql);
+            // @ts-ignore
+            const conn = await database_1.default.connect();
+            console.log(conn.query(sql, [cat]));
+            const result = await conn.query(sql, [cat]);
+            conn.release();
+            return result.rows;
+        }
+        catch (err) {
+            throw new Error(`Could not get products of ${cat}. Error: ${err}`);
         }
     }
 }

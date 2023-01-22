@@ -49,11 +49,11 @@ export class ProductStore {
 
     async create(product: Product): Promise<Product> {
         try {
-            const sql = 'INSERT INTO products (name, price) VALUES($1, $2) RETURNING *'
+            const sql = 'INSERT INTO products (name, price, category) VALUES($1, $2, $3) RETURNING *'
             // @ts-ignore
             const conn = await Client.connect()
 
-            const result = await conn.query(sql, [product.name, product.price])
+            const result = await conn.query(sql, [product.name, product.price, product.category.toLowerCase()])
 
             const createdProduct :Product = result.rows[0]
 
@@ -73,11 +73,11 @@ export class ProductStore {
 
             const result = await conn.query(sql, [id])
 
-            const article = result.rows[0]
+            const product = result.rows[0]
 
             conn.release()
 
-            return article
+            return product
         } catch (err) {
             throw new Error(`Could not delete product ${id}. Error: ${err}`)
         }
@@ -85,14 +85,14 @@ export class ProductStore {
 
     async productsByCategory(cat: string):  Promise<Product[]> {
         try {
-            const sql = 'SELECT * FROM products WHERE category=($1)'
+            const sql = 'SELECT * FROM products WHERE category=($1)';
+            console.log(sql)
             // @ts-ignore
-            const conn = await Client.connect()
-
-            const result = await conn.query(sql, [cat])
+            const conn = await Client.connect();
+            console.log(conn.query(sql, [cat]))
+            const result = await conn.query(sql, [cat]);
 
             conn.release()
-
             return result.rows
         } catch (err) {
             throw new Error(`Could not get products of ${cat}. Error: ${err}`)

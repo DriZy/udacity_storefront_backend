@@ -5,17 +5,17 @@ import jwt from 'jsonwebtoken'
 
 const store = new ProductStore()
 
-const index = async (_req: Request, res: Response) => {
+const indexHandler = async (_req: Request, res: Response) => {
     const products = await store.index()
     res.json(products)
 }
 
-const show = async (req: Request, res: Response) => {
-    const article = await store.show(req.params.id)
-    res.json(article)
+const showHandler = async (req: Request, res: Response) => {
+    const product = await store.show(req.params.id)
+    res.json(product)
 }
 
-const create = async (req: Request, res: Response) => {
+const createHandler = async (req: Request, res: Response) => {
     try {
         const authorizationHeader = req.headers.authorization
         // @ts-ignore
@@ -41,7 +41,7 @@ const create = async (req: Request, res: Response) => {
         res.json(err)
     }
 }
-const destroy = async (req: Request, res: Response) => {
+const destroyHandler = async (req: Request, res: Response) => {
     try {
         const authorizationHeader = req.headers.authorization
         // @ts-ignore
@@ -62,9 +62,10 @@ const destroy = async (req: Request, res: Response) => {
     }
 }
 
-const productsByCategory = async (req: Request, res: Response) => {
+const productsByCategoryHandler = async (req: Request, res: Response) => {
     try {
-        const products = await store.productsByCategory(req.params.category)
+        const category: string = String(req.params.category);
+        const products = await store.productsByCategory(category)
         res.json(products)
     } catch (error) {
         res.status(400)
@@ -75,11 +76,11 @@ const productsByCategory = async (req: Request, res: Response) => {
 
 
 const productRoutes = (app: express.Application) => {
-    app.get('/products', index)
-    app.get('/products/:id', show)
-    app.post('/products', create)
-    app.delete('/products/:id', destroy)
-    app.delete('/products/:category', productsByCategory)
+    app.get('/products', indexHandler)
+    app.get('/products/:id', showHandler)
+    app.post('/products', createHandler)
+    app.delete('/products/:id', destroyHandler)
+    app.get('/products/category/:category', productsByCategoryHandler)
 }
 
 export default productRoutes

@@ -7,15 +7,15 @@ const product_1 = require("../models/product");
 // @ts-ignore
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const store = new product_1.ProductStore();
-const index = async (_req, res) => {
+const indexHandler = async (_req, res) => {
     const products = await store.index();
     res.json(products);
 };
-const show = async (req, res) => {
+const showHandler = async (req, res) => {
     const article = await store.show(req.params.id);
     res.json(article);
 };
-const create = async (req, res) => {
+const createHandler = async (req, res) => {
     try {
         const authorizationHeader = req.headers.authorization;
         // @ts-ignore
@@ -41,7 +41,7 @@ const create = async (req, res) => {
         res.json(err);
     }
 };
-const destroy = async (req, res) => {
+const destroyHandler = async (req, res) => {
     try {
         const authorizationHeader = req.headers.authorization;
         // @ts-ignore
@@ -62,10 +62,22 @@ const destroy = async (req, res) => {
         res.json({ error });
     }
 };
+const productsByCategoryHandler = async (req, res) => {
+    try {
+        const category = String(req.params.category);
+        const products = await store.productsByCategory(category);
+        res.json(products);
+    }
+    catch (error) {
+        res.status(400);
+        res.json({ error });
+    }
+};
 const productRoutes = (app) => {
-    app.get('/products', index);
-    app.get('/products/:id', show);
-    app.post('/products', create);
-    app.delete('/products/:id', destroy);
+    app.get('/products', indexHandler);
+    app.get('/products/:id', showHandler);
+    app.post('/products', createHandler);
+    app.delete('/products/:id', destroyHandler);
+    app.get('/products/category/:category', productsByCategoryHandler);
 };
 exports.default = productRoutes;

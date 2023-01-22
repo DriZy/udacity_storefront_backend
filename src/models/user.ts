@@ -9,7 +9,8 @@ dotenv.config()
 
 export type User = {
     id?: number;
-    username: string;
+    firstname: string;
+    lastname?: string;
     password: string;
 }
 
@@ -22,23 +23,24 @@ export class UserStore {
 
             // @ts-ignore
             const conn = await Client.connect()
-            const sql = 'INSERT INTO users (username, password) VALUES($1, $2) RETURNING *'
+            const sql = 'INSERT INTO users (firstname, lastname, password) VALUES($1, $2, $3) RETURNING *'
 
             const hash = bcrypt.hashSync(
                 u.password + pepper,
                 parseInt(saltRounds)
             );
 
-            const result = await conn.query(sql, [u.username, hash])
+            const result = await conn.query(sql, [u.firstname, u.lastname, hash])
             const user = result.rows[0]
 
             conn.release()
 
             return user
         } catch(err) {
-            throw new Error(`unable create user (${u.username}): ${err}`)
+            throw new Error(`unable create user (${u.firstname}): ${err}`)
         }
-    }    async index(): Promise<User[]> {
+    }
+    async index(): Promise<User[]> {
         try {
             // @ts-ignore
             const conn = await Client.connect()
@@ -70,14 +72,14 @@ export class UserStore {
         }
     }
 
-    async authenticate(username: string, password: string): Promise<User | null> {
+    async authenticate(firstname: string, password: string): Promise<User | null> {
         const pepper = process.env.JWT_TOKEN_PAS
 
         // @ts-ignore
         const conn = await Client.connect()
-        const sql = 'SELECT password FROM users WHERE username=($1)'
+        const sql = 'SELECT password FROM users WHERE firstname=($1)'
 
-        const result = await conn.query(sql, [username])
+        const result = await conn.query(sql, [firstname])
 
         console.log(password+pepper)
 
@@ -108,7 +110,7 @@ export class UserStore {
 
             return user
         } catch (err) {
-            throw new Error(`Could not delete article ${id}. Error: ${err}`)
+            throw new Error(`Could not delete user ${id}. Error: ${err}`)
         }
     }
 }

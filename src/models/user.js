@@ -11,6 +11,23 @@ const database_1 = __importDefault(require("../database"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 class UserStore {
+    async create(u) {
+        try {
+            const pepper = process.env.JWT_TOKEN_PAS;
+            const saltRounds = process.env.SALT_ROUNDS ?? '10';
+            // @ts-ignore
+            const conn = await database_1.default.connect();
+            const sql = 'INSERT INTO users (firstname, lastname, password) VALUES($1, $2, $3) RETURNING *';
+            const hash = bcrypt_1.default.hashSync(u.password + pepper, parseInt(saltRounds));
+            const result = await conn.query(sql, [u.firstname, u.lastname, hash]);
+            const user = result.rows[0];
+            conn.release();
+            return user;
+        }
+        catch (err) {
+            throw new Error(`unable create user (${u.firstname}): ${err}`);
+        }
+    }
     async index() {
         try {
             // @ts-ignore
@@ -21,7 +38,7 @@ class UserStore {
             return result.rows;
         }
         catch (err) {
-            throw new Error(`Could not get articles. Error: ${err}`);
+            throw new Error(`Could not get users. Error: ${err}`);
         }
     }
     async show(id) {
@@ -37,29 +54,12 @@ class UserStore {
             throw new Error(`Could not get user ${id}. Error: ${err}`);
         }
     }
-    async create(u) {
-        try {
-            const saltRounds = process.env.SALT_ROUNDS ?? '10';
-            const pepper = process.env.BCRYPT_PASSWORD;
-            // @ts-ignore
-            const conn = await database_1.default.connect();
-            const sql = 'INSERT INTO users (username, password_digest) VALUES($1, $2) RETURNING *';
-            const hash = bcrypt_1.default.hashSync(u.password + pepper, parseInt(saltRounds));
-            const result = await conn.query(sql, [u.username, hash]);
-            const user = result.rows[0];
-            conn.release();
-            return user;
-        }
-        catch (err) {
-            throw new Error(`unable create user (${u.username}): ${err}`);
-        }
-    }
-    async authenticate(username, password) {
-        const pepper = process.env.BCRYPT_PASSWORD;
+    async authenticate(firstname, password) {
+        const pepper = process.env.JWT_TOKEN_PAS;
         // @ts-ignore
         const conn = await database_1.default.connect();
-        const sql = 'SELECT password FROM users WHERE username=($1)';
-        const result = await conn.query(sql, [username]);
+        const sql = 'SELECT password FROM users WHERE firstname=($1)';
+        const result = await conn.query(sql, [firstname]);
         console.log(password + pepper);
         if (result.rows.length) {
             const user = result.rows[0];
