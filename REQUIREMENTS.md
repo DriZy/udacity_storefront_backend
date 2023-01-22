@@ -10,24 +10,25 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Create [token secret required] `'/products' [POST] (token)`
 - [OPTIONAL] Top 5 most popular products
 - [OPTIONAL] Products by category `'/products/category/:category' [GET]`
-- [ADDED] Delete: `'/products/:id'  [DELETE]`
+- [ADDED] Delete [token secret required]: `'/products/:id'  [DELETE] (token)`
 
 
 #### Users
-- Index [token required] `'/users' [GET]`
-- Show [token required] `'/users/:id' [GET]`
-- Create [token required] `'/users' [POST]`
-- [ADDED] Delete [token required]: 'users/:id' [DELETE] (token)
+- Index [token required] `'/users' [GET] (token)`
+- Show [token required] `'/users/:id' [GET] (token)`
+- Create [token required] `'/users' [POST] (token)`
+- [ADDED] Delete [token required]: `'/users/:id' [DELETE] (token)`
 
 #### Orders
-- [ADDED] Index [token secret required] `'/orders' [GET]`
-- [ADDED] Show [token secret required] `'/orders/:id' [GET]`
-- [ADDED] Create [token secret required] `'/orders' [POST]`
-- Current Order by user (args: user id)[token required] `'/orders' [GET]`
-- Completed Orders by user (args: user id)[token required] `'/orders' [GET]`
-- [ADDED] Update order's status [token required] `'/orders?status=<status>&orderId=<order id>' [PUT] (token)`
+- [ADDED] Index [token secret required] `'/orders' [GET] (token)`
+- [ADDED] Show [token secret required] `'/orders/:id' [GET] (token)`
+- [ADDED] Create [token secret required] `'/orders' [POST] (token)`
+- Current Order by user (args: user id)[token required] `'/orders/current/:user_id' [GET] (token)`
+- Completed Orders by user (args: user id)[token required]: `'/orders/completed/:user_id' [GET] (token)`
+- [ADDED] Orders by user (args: user id)[token required]: `'/orders/user/:user_id/' [GET] (token)`
+- [ADDED] Update order's status [token required]: `'/orders?status=<status>&orderId=<order id>' [PUT] (token)`
 - [ADDED] Delete [token required]: `'/orders/:id' [DELETE] (token)`
-
+- [ADDED] Add Product to order (args: order id) [token required]: `'/orders/:id/products' [POST] (token)`
 
 
 ## Data Shapes

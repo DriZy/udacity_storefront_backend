@@ -2,6 +2,7 @@ import express, {Request, Response} from "express";
 import {Product, ProductStore} from "../models/product";
 // @ts-ignore
 import jwt from 'jsonwebtoken'
+import {verifyAuthToken} from "../utils/auth";
 
 const store = new ProductStore()
 
@@ -78,8 +79,8 @@ const productsByCategoryHandler = async (req: Request, res: Response) => {
 const productRoutes = (app: express.Application) => {
     app.get('/products', indexHandler)
     app.get('/products/:id', showHandler)
-    app.post('/products', createHandler)
-    app.delete('/products/:id', destroyHandler)
+    app.post('/products', verifyAuthToken, createHandler)
+    app.delete('/products/:id', verifyAuthToken, destroyHandler)
     app.get('/products/category/:category', productsByCategoryHandler)
 }
 
